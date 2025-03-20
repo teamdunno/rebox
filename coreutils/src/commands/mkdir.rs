@@ -1,41 +1,40 @@
+use boxutils::args::Args;
 use boxutils::commands::Command;
-use boxutils::commands::get_args;
-use std::fs;
 use std::env;
+use std::fs;
 
 pub struct Mkdir;
 
 impl Command for Mkdir {
     fn execute(&self) {
-        let args: Vec<String> = env::args().collect::<Vec<_>>().clone();
-        let arguments: Vec<String> = get_args(String::from("mkdir"), args.clone());
+        let raw_args: Vec<String> = env::args().collect::<Vec<_>>();
+        let args = Args::new("mkdir", raw_args);
 
-        if arguments.len() == 0 {
+        if args.get_args().len() == 0 {
             panic!(
                 "{}",
-                String::from(
-                    "Usage: mkdir [DIR1] [DIR1] etc. pp. [-p, --parents]"
-                )
+                String::from("Usage: mkdir [DIR1] [DIR1] etc. pp. [-p, --parents]")
             );
         }
-        for arg in arguments.iter() {
-            if arg == "--help" {
-                println!(
-                    "{}",
-                    String::from(
-                        "Usage: mkdir [DIR1] [DIR2] etc. pp. [-p, --parents]"
-                ));
-                return;
-            }
+
+        if args.get_flag("--help") {
+            println!("Usage: mkdir [DIR1] [DIR2] etc. pp. [-p, --parents]");
+            return;
         }
 
-        for arg in arguments.iter() {
-            if (arg != "-p") & (arg != "--parent") {
-                if args.contains(&String::from("-p")) || args.contains(&String::from("--parent")) {
-                    let _ = fs::create_dir_all(String::from(arg));
-                } else {
-                    fs::create_dir(String::from(arg)).unwrap();
-                }
+        let parented = args.get_flag("-p") || args.get_flag("--parents");
+
+        let to_create = args
+            .get_args()
+            .into_iter()
+            .filter(|x| !x.starts_with("-"))
+            .collect::<Vec<_>>();
+
+        for dir in to_create {
+            if parented {
+                let _ = fs::create_dir_all(dir);
+            } else {
+                let _ = fs::create_dir(dir);
             }
         }
     }
