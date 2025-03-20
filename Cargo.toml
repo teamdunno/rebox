@@ -4,3 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+boxutils = { path = "./utils" }
+coreutils = { path = "./coreutils" }
+
+
+[[bin]]
+name = "box"
+path = "./src/main.rs"

@@ -3,5 +3,20 @@
 version = 4
 
 [[package]]
+name = "boxutils"
+version = "0.1.0"
+
+[[package]]
+name = "coreutils"
+version = "0.1.0"
+dependencies = [
+ "boxutils",
+]
+
+[[package]]
 name = "rebox"
 version = "0.1.0"
+dependencies = [
+ "boxutils",
+ "coreutils",
+]
