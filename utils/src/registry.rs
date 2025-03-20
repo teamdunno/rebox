@@ -28,3 +28,35 @@ impl CommandRegistry {
         }
     }
 }
+
+mod tests {
+    #[test]
+    fn test_register() {
+        use super::Command;
+        use super::CommandRegistry;
+        struct TestCommand;
+        impl Command for TestCommand {
+            fn execute(&self) {}
+        }
+
+        let mut registry = CommandRegistry::new();
+        registry.register("test", Box::new(TestCommand));
+        assert!(registry.get("test").is_some());
+    }
+
+    #[test]
+    fn test_execute() {
+        use super::Command;
+        use super::CommandRegistry;
+        struct TestCommand;
+        impl Command for TestCommand {
+            fn execute(&self) {
+                println!("TestCommand executed");
+            }
+        }
+
+        let mut registry = CommandRegistry::new();
+        registry.register("test", Box::new(TestCommand));
+        registry.execute("test");
+    }
+}

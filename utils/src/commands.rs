@@ -12,14 +12,23 @@ pub fn being_called_as() -> String {
 }
 
 pub fn get_args(commandname: String, args: Vec<String>) -> Vec<String> {
-    let mut arguments: Vec<String> = args.clone();
+    let mut arguments = args.clone();
+
+    if arguments.is_empty() {
+        return arguments; // Prevent out-of-bounds errors
+    }
+
     let exe_name = being_called_as();
 
-    let _ = mem::replace(&mut arguments[0], exe_name);
+    // Replace only if it's actually the executable name
+    if arguments[0] != commandname {
+        let _ = mem::replace(&mut arguments[0], exe_name);
+    }
 
+    // Trim arguments if commandname is found
     if let Some(num) = arguments.iter().position(|x| *x == commandname) {
         arguments.drain(..=num);
-    };
+    }
 
     arguments
 }
