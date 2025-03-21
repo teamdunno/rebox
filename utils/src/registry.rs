@@ -16,6 +16,14 @@ impl CommandRegistry {
         self.commands.insert(name.to_string(), command);
     }
 
+    pub fn list(&self) -> Vec<String> {
+        let mut bufvec = Vec::new();
+        for (key, _value) in self.commands.iter() {
+            bufvec.push(String::from(key))
+        }
+        bufvec
+    }
+
     pub fn get(&self, name: &str) -> Option<&Box<dyn Command>> {
         self.commands.get(name)
     }

@@ -13,6 +13,9 @@ impl Command for Boxcmd {
             registry.execute(cmd);
             return;
         }
-        println!("No command provided.");
+        println!(
+            "No command provided. Included commands:\n{}",
+            registry.list().join(", ")
+        );
     }
 }

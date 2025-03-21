@@ -3,7 +3,6 @@ use std::env;
 use std::process::Command as stdCommand;
 use std::io::{self, Write, ErrorKind};
 use std::path::Path;
-use std::fmt;
 
 pub struct Ash;
 
