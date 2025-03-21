@@ -6,6 +6,7 @@ edition = "2024"
 [dependencies]
 boxutils = { path = "./utils" }
 coreutils = { path = "./coreutils" }
+shell = { path = "./shell" }
 
 
 [[bin]]
