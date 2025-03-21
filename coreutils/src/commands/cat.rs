@@ -12,6 +12,10 @@ impl Command for Cat {
         let arguments: Vec<String> = get_args(String::from("cat"), args);
         let mut vecbuf = Vec::new();
 
+        if arguments.len() == 0 {
+            let _ = io::stdin().read_to_end(&mut vecbuf);
+        }
+
         for file in arguments.iter() {
             let mut tmpbuf = Vec::new();
             let mut read = BufReader::new(File::open(file).unwrap());
