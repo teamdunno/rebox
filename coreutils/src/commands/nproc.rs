@@ -1,7 +1,7 @@
-use boxutils::commands::Command;
 use boxutils::args::ArgParser;
-use std::env;
+use boxutils::commands::Command;
 use num_cpus::{get, get_physical};
+use std::env;
 
 pub struct Nproc;
 
@@ -17,7 +17,7 @@ impl Command for Nproc {
         let mut all = false;
         if args.get_flag("--help") {
             println!(
-"
+                "
 Usage: nproc [--all] [ignore=N]
 Prints the number of available CPUs to stdout.
 
@@ -25,7 +25,7 @@ Prints the number of available CPUs to stdout.
     --ignore=N, --ignore N  Ignore N CPUs
 "
             );
-            return
+            return;
         }
 
         if args.get_flag("--all") {

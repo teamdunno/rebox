@@ -1,8 +1,8 @@
 use boxutils::commands::Command;
 use std::env;
-use std::process::Command as stdCommand;
-use std::io::{self, Write, ErrorKind};
+use std::io::{self, ErrorKind, Write};
 use std::path::Path;
+use std::process::Command as stdCommand;
 
 pub struct Ash;
 
@@ -26,16 +26,14 @@ impl Command for Ash {
                     let new_path = arguments.next();
                     let new_path = Path::new(new_path.unwrap());
                     let _ = env::set_current_dir(&new_path).is_ok();
-                },
+                }
                 command => {
-                    let out = stdCommand::new(command)
-                        .args(arguments)
-                        .spawn();
+                    let out = stdCommand::new(command).args(arguments).spawn();
 
                     match out {
                         Ok(mut out) => {
-                           let _ = out.wait();
-                        },
+                            let _ = out.wait();
+                        }
                         Err(err) => match err.kind() {
                             ErrorKind::NotFound => {
                                 eprintln!("ash: {}: not found", command);
@@ -46,9 +44,9 @@ impl Command for Ash {
                             _ => {
                                 eprintln!("ash: uncaught error: {}", err);
                             }
-                        }
+                        },
                     }
-                },
+                }
             }
         }
     }

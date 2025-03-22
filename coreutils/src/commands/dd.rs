@@ -1,8 +1,8 @@
 use boxutils::commands::Command;
-use std::env;
 use std::collections::HashMap;
-use std::io::{self, Read, Write, BufReader};
+use std::env;
 use std::fs::File;
+use std::io::{self, BufReader, Read, Write};
 use std::time::Instant;
 
 pub struct Dd;
@@ -17,7 +17,7 @@ impl Command for Dd {
             if let Some((k, v)) = argument.split_once('=') {
                 arguments.insert(k.to_string().to_lowercase(), v.to_string());
             } // don't handle anything that does not follow dd's syntax.
-              // TODO: inform about malformed arguments
+            // TODO: inform about malformed arguments
         }
 
         if let Some(bs) = arguments.get("bs") {
@@ -25,7 +25,7 @@ impl Command for Dd {
             if v.parse::<u64>().is_ok() {
                 // assume the bs is specified in bytes,
                 // because the last char is a number
-            blocksize = bs.parse::<u64>().unwrap()
+                blocksize = bs.parse::<u64>().unwrap()
             } else {
                 match v {
                     "K" | "k" => blocksize = k.parse::<u64>().unwrap() * 1024,
@@ -36,7 +36,7 @@ impl Command for Dd {
                     "GB" => blocksize = k.parse::<u64>().unwrap() * 1000 * 1000 * 1000,
                     _ => {
                         eprintln!("Invalid blocksize specified.");
-                        return
+                        return;
                     }
                 }
             }
@@ -66,15 +66,10 @@ impl Command for Dd {
 
         println!(
             "{}+{} records in", // TODO: actually calculate records in
-            out_blocks,
-            out_remainder
+            out_blocks, out_remainder
         );
 
-        println!(
-            "{}+{} records out",
-            out_blocks,
-            out_remainder
-        );
+        println!("{}+{} records out", out_blocks, out_remainder);
 
         println!(
             "{} bytes ({}B) copied, {:.6} seconds, {:.2}KB/s",
@@ -82,7 +77,6 @@ impl Command for Dd {
             vecbuf.len(),
             duration,
             kb_per_sec
-
         )
     }
 }
