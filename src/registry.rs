@@ -10,6 +10,7 @@ pub fn get_registry() -> CommandRegistry {
     registry.register("mkdir", Box::new(coreutils::commands::Mkdir));
     registry.register("ash", Box::new(shell::ash::Ash));
     registry.register("dd", Box::new(coreutils::commands::Dd));
+    registry.register("nproc", Box::new(coreutils::commands::Nproc));
     registry.register("box", Box::new(Boxcmd));
 
     registry

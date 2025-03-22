@@ -25,7 +25,7 @@ impl Command for Dd {
             if v.parse::<u64>().is_ok() {
                 // assume the bs is specified in bytes,
                 // because the last char is a number
-                blocksize = bs.parse::<u64>().unwrap()
+            blocksize = bs.parse::<u64>().unwrap()
             } else {
                 match v {
                     "K" | "k" => blocksize = k.parse::<u64>().unwrap() * 1024,
@@ -59,8 +59,8 @@ impl Command for Dd {
             let _ = io::stdout().write_all(&vecbuf);
         }
 
-        let duration = start.elapsed().as_millis() / 1000;
-
+        let duration = start.elapsed().as_secs_f64();
+        let kb_per_sec = (vecbuf.len() as f64 / 1024.0) / duration;
         let out_blocks = vecbuf.len() as u64 / blocksize;
         let out_remainder = vecbuf.len() as u64 % blocksize;
 
@@ -77,9 +77,12 @@ impl Command for Dd {
         );
 
         println!(
-            "{} bytes copied, ca. {} seconds",
+            "{} bytes ({}B) copied, {:.6} seconds, {:.2}KB/s",
             vecbuf.len(),
-            duration
+            vecbuf.len(),
+            duration,
+            kb_per_sec
+
         )
     }
 }
