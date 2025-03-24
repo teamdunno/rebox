@@ -1,17 +1,13 @@
-mod hello;
-pub use hello::Hello;
+macro_rules! command {
+    ($mod:ident::$cmd:ident) => {
+        mod $mod;
+        pub use $mod::$cmd;
+    };
+}
 
-mod cat;
-pub use cat::Cat;
-
-mod echo;
-pub use echo::Echo;
-
-mod mkdir;
-pub use mkdir::Mkdir;
-
-mod dd;
-pub use dd::Dd;
-
-mod nproc;
-pub use nproc::Nproc;
+command!(hello::Hello);
+command!(cat::Cat);
+command!(echo::Echo);
+command!(mkdir::Mkdir);
+command!(dd::Dd);
+command!(nproc::Nproc);
