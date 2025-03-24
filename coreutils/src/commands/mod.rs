@@ -14,3 +14,4 @@ command!(nproc::Nproc);
 command!(r#true::True);
 command!(r#false::False);
 command!(test::Test);
+command!(yes::Yes);
