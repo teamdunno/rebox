@@ -111,6 +111,10 @@ impl ArgParserBuilder {
             normal_args,
         }
     }
+
+    pub fn parse_args(self, program_name: &str) -> ArgParser {
+        self.parse(program_name, std::env::args().collect())
+    }
 }
 
 #[cfg(test)]

@@ -1,18 +1,16 @@
 use boxutils::args::ArgParser;
 use boxutils::commands::Command;
-use num_cpus::{get, get_physical};
-use std::env;
+use num_cpus::get;
 
 pub struct Nproc;
 
 impl Command for Nproc {
     fn execute(&self) {
-        let raw_args = env::args().collect::<Vec<_>>();
         let args = ArgParser::builder()
             .add_flag("--help")
             .add_flag("--ignore")
             .add_flag("--all")
-            .parse("nproc", raw_args);
+            .parse_args("nproc");
         let mut ignore: u64 = 0;
         let mut all = false;
         if args.get_flag("--help") {
