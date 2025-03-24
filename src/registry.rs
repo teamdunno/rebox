@@ -19,6 +19,7 @@ pub fn get_registry() -> CommandRegistry {
     );
     registry.register("[", Box::new(coreutils::commands::Test::with_bracket()));
     registry.register("yes", Box::new(coreutils::commands::Yes));
+    registry.register("pwd", Box::new(coreutils::commands::Pwd));
     registry.register("box", Box::new(Boxcmd));
 
     registry
