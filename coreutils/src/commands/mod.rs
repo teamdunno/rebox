@@ -17,3 +17,4 @@ command!(test::Test);
 command!(yes::Yes);
 command!(pwd::Pwd);
 command!(sleep::Sleep);
+command!(whoami::WhoAmI);
