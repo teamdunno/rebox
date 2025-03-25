@@ -26,6 +26,7 @@ pub fn get_registry() -> CommandRegistry {
         "[" => coreutils::commands::Test::with_bracket(),
         "yes" => coreutils::commands::Yes,
         "pwd" => coreutils::commands::Pwd,
+        "sleep" => coreutils::commands::Sleep,
         "box" => Boxcmd
     });
 
