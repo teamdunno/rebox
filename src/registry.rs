@@ -28,6 +28,7 @@ pub fn get_registry() -> CommandRegistry {
         "pwd" => coreutils::commands::Pwd,
         "sleep" => coreutils::commands::Sleep,
         "whoami" => coreutils::commands::WhoAmI,
+        "hostname" => coreutils::commands::Hostname,
         "box" => Boxcmd
     });
 
