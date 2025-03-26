@@ -19,3 +19,4 @@ command!(pwd::Pwd);
 command!(sleep::Sleep);
 command!(whoami::WhoAmI);
 command!(hostname::Hostname);
+command!(tee::Tee);

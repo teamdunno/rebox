@@ -29,6 +29,7 @@ pub fn get_registry() -> CommandRegistry {
         "sleep" => coreutils::commands::Sleep,
         "whoami" => coreutils::commands::WhoAmI,
         "hostname" => coreutils::commands::Hostname,
+        "tee" => coreutils::commands::Tee,
         "box" => Boxcmd
     });
 
