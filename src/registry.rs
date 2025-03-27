@@ -30,6 +30,7 @@ pub fn get_registry() -> CommandRegistry {
         "whoami" => coreutils::commands::WhoAmI,
         "hostname" => coreutils::commands::Hostname,
         "tee" => coreutils::commands::Tee,
+        "base64" => coreutils::commands::Base64,
         "box" => Boxcmd
     });
 
