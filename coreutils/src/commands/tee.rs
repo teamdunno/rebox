@@ -39,7 +39,7 @@ impl Command for Tee {
         }
 
         let mut buffer = String::new();
-        while boxutils::input::get_like_repl(&mut buffer) {
+        while boxutils::input::repl(&mut buffer) {
             for output in &mut writes {
                 let _ = output.write_all(buffer.as_bytes());
                 let _ = output.flush();
