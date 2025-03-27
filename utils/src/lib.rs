@@ -1,4 +1,5 @@
 pub mod args;
 pub mod commands;
-pub mod registry;
 pub mod encoding;
+pub mod input;
+pub mod registry;

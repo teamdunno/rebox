@@ -39,7 +39,7 @@ impl Command for Tee {
         }
 
         let mut buffer = String::new();
-        while std::io::stdin().read_line(&mut buffer).unwrap_or(0) > 0 {
+        while boxutils::input::get_like_repl(&mut buffer) {
             for output in &mut writes {
                 let _ = output.write_all(buffer.as_bytes());
                 let _ = output.flush();
