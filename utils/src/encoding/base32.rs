@@ -1,6 +1,6 @@
 const BASE32_ALPHABET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
-fn encode(to_encode: String) -> String {
+pub fn encode(to_encode: String) -> String {
     let bytes = to_encode.as_bytes();
     let mut encoded = String::new();
     let mut bits = 0u32;
@@ -27,7 +27,7 @@ fn encode(to_encode: String) -> String {
     encoded
 }
 
-fn decode(to_decode: String) -> String {
+pub fn decode(to_decode: String) -> String {
     let bytes = to_decode.as_bytes();
     let mut decoded = Vec::new();
     let mut bits = 0u32;

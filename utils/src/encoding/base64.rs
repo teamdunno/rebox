@@ -1,6 +1,6 @@
 const BASE64_ALPHABET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-fn encode(to_encode: String) -> String {
+pub fn encode(to_encode: String) -> String {
     let bytes = to_encode.as_bytes();
     let mut encoded = String::new();
     let mut chunks = bytes.chunks_exact(3);
@@ -33,7 +33,7 @@ fn encode(to_encode: String) -> String {
     encoded
 }
 
-fn decode(to_decode: String) -> String {
+pub fn decode(to_decode: String) -> String {
     let bytes = to_decode.as_bytes();
 
     let mut decoded = Vec::new();
