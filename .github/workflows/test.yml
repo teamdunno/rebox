@@ -13,10 +13,5 @@ jobs:
       - name: Cache dependencies
         uses: Swatinem/rust-cache@v2
 
-      - name: Install dependencies
-        run: cargo build
-        working-directory: utils
-
       - name: Run tests
-        run: cargo test
-        working-directory: utils
+        run: cargo test -p boxutils
