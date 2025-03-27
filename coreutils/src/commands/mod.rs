@@ -21,3 +21,4 @@ command!(whoami::WhoAmI);
 command!(hostname::Hostname);
 command!(tee::Tee);
 command!(base64::Base64);
+command!(base32::Base32);

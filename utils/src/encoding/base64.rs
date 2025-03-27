@@ -64,6 +64,7 @@ pub fn decode(to_decode: String) -> String {
 }
 
 mod tests {
+    #[allow(unused_imports)]
     use super::*;
 
     #[test]

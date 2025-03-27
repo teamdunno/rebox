@@ -31,6 +31,7 @@ pub fn get_registry() -> CommandRegistry {
         "hostname" => coreutils::commands::Hostname,
         "tee" => coreutils::commands::Tee,
         "base64" => coreutils::commands::Base64,
+        "base32" => coreutils::commands::Base32,
         "box" => Boxcmd
     });
 
