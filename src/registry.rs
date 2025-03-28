@@ -33,6 +33,7 @@ pub fn get_registry() -> CommandRegistry {
         "base64" => coreutils::commands::Base64,
         "base32" => coreutils::commands::Base32,
         "seq" => coreutils::commands::Seq,
+        "env" => coreutils::commands::Env,
         "box" => Boxcmd
     });
 
