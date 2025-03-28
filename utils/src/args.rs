@@ -7,8 +7,11 @@ pub struct ArgParser {
     flags: HashSet<String>,
     #[allow(dead_code)]
     options: HashSet<String>,
+    #[allow(dead_code)]
+    option_lists: HashSet<String>,
     parsed_flags: HashSet<String>,
     parsed_options: HashMap<String, String>,
+    parsed_option_lists: HashMap<String, Vec<String>>,
     normal_args: Vec<String>,
 }
 
@@ -25,6 +28,12 @@ impl ArgParser {
         self.parsed_options.get(option).map(String::as_str)
     }
 
+    pub fn get_option_list(&self, option: &str) -> Option<Vec<&str>> {
+        self.parsed_option_lists
+            .get(option)
+            .map(|a| a.iter().map(String::as_str).collect::<Vec<&str>>())
+    }
+
     pub fn get_normal_args(&self) -> Vec<String> {
         self.normal_args.clone()
     }
@@ -33,6 +42,8 @@ impl ArgParser {
 pub struct ArgParserBuilder {
     flags: HashSet<String>,
     options: HashSet<String>,
+    option_lists: HashSet<String>,
+    seperator: String,
 }
 
 impl ArgParserBuilder {
@@ -40,6 +51,8 @@ impl ArgParserBuilder {
         Self {
             flags: HashSet::new(),
             options: HashSet::new(),
+            option_lists: HashSet::new(),
+            seperator: "".into(),
         }
     }
 
@@ -67,20 +80,50 @@ impl ArgParserBuilder {
         self
     }
 
+    pub fn add_option_list(mut self, option_list: &str) -> Self {
+        self.option_lists.insert(option_list.to_string());
+        self
+    }
+
+    pub fn add_option_lists(mut self, option_lists: Vec<&str>) -> Self {
+        for option in option_lists {
+            self.option_lists.insert(option.to_string());
+        }
+        self
+    }
+
+    pub fn set_seperator(mut self, seperator: &str) -> Self {
+        self.seperator = seperator.into();
+        self
+    }
+
     pub fn parse(self, program_name: &str, args: Vec<String>) -> ArgParser {
         let args = get_args(program_name.to_string(), args);
 
         let mut parsed_flags = HashSet::new();
         let mut parsed_options = HashMap::new();
+        let mut parsed_option_lists: HashMap<String, Vec<String>> = HashMap::new();
         let mut normal_args = Vec::new();
 
         let mut iter = args.into_iter();
         while let Some(arg) = iter.next() {
+            if arg == self.seperator {
+                break;
+            }
+
             if self.flags.contains(&arg) {
                 parsed_flags.insert(arg.clone());
             } else if self.options.contains(&arg) {
                 if let Some(value) = iter.next() {
                     parsed_options.insert(arg.clone(), value);
+                }
+            } else if self.option_lists.contains(&arg) {
+                if let Some(value) = iter.next() {
+                    // Corrected: use `arg` instead of `flag` for lookup and insertion
+                    parsed_option_lists
+                        .entry(arg.clone()) // Use arg.clone() to insert into the map
+                        .or_insert_with(Vec::new) // Insert a new vector if none exists
+                        .push(value); // Push the new value to the list
                 }
             } else if arg.len() > 2 && arg.starts_with('-') && !arg.starts_with("--") {
                 let mut chars = arg.chars().skip(1).peekable();
@@ -96,6 +139,19 @@ impl ArgParserBuilder {
                             parsed_options.insert(flag, next_value);
                         }
                         break;
+                    } else if self.option_lists.contains(&flag) {
+                        let value: String = chars.clone().collect();
+                        if !value.is_empty() {
+                            parsed_option_lists
+                                .entry(flag.clone()) // Use flag.clone() for the option list key
+                                .or_insert_with(Vec::new)
+                                .push(value);
+                        } else if let Some(next_value) = iter.next() {
+                            parsed_option_lists
+                                .entry(flag.clone())
+                                .or_insert_with(Vec::new)
+                                .push(next_value);
+                        }
                     }
                 }
             } else {
@@ -103,12 +159,18 @@ impl ArgParserBuilder {
             }
         }
 
+        while let Some(arg) = iter.next() {
+            normal_args.push(arg.to_string());
+        }
+
         ArgParser {
             flags: self.flags,
             options: self.options,
+            option_lists: self.option_lists,
             parsed_flags,
             parsed_options,
             normal_args,
+            parsed_option_lists,
         }
     }
 
@@ -196,5 +258,40 @@ mod tests {
         assert_eq!(args.get_option("--another"), Some("file.txt"));
         assert_eq!(args.get_option("--does-not-exist"), None);
         assert_eq!(args.get_normal_args(), vec!["somefile.txt".to_string()]);
+    }
+
+    #[test]
+    fn test_option_lists() {
+        let args = ArgParser::builder()
+            .add_option_list("-u")
+            .parse("sometool", vec![
+                "sometool".into(),
+                "-u".into(),
+                "PATH".into(),
+                "-uWSL_ENV".into(),
+            ]);
+
+        assert_eq!(args.get_option_list("-u"), Some(vec!["PATH", "WSL_ENV"]));
+    }
+
+    #[test]
+    fn test_seperated() {
+        let args = ArgParser::builder()
+            .add_option_list("-u")
+            .add_flag("--someflag")
+            .set_seperator("--")
+            .parse("sometool", vec![
+                "sometool".into(),
+                "-u".into(),
+                "PATH".into(),
+                "--".into(),
+                "cargo".into(),
+                "--someflag".into(),
+                "-uIDK".into(),
+            ]);
+
+        assert_eq!(args.get_option_list("-u"), Some(vec!["PATH"]));
+        assert_eq!(args.get_flag("--someflag"), false);
+        assert_eq!(args.get_normal_args(), vec!["cargo", "--someflag", "-uIDK"]);
     }
 }
