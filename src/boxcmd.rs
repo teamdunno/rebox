@@ -1,20 +1,26 @@
 use super::registry::get_registry;
+use boxutils::args::ArgParser;
 use boxutils::commands::Command;
-use std::env;
 
 pub struct Boxcmd;
 
 impl Command for Boxcmd {
     fn execute(&self) {
-        let args: Vec<String> = env::args().collect();
+        let parser = ArgParser::builder().parse_args("box");
+
         let registry = get_registry();
-        let command = &args.get(1);
-        if let Some(cmd) = command {
-            registry.execute(cmd);
+
+        for command in parser.get_normal_args() {
+            if command == "box" {
+                continue;
+            }
+
+            registry.execute(&command);
             return;
         }
+
         println!(
-            "No command provided. Included commands:\n{}",
+            "No valid command provided. Included commands:\n{}",
             registry.list().join(", ")
         );
     }
