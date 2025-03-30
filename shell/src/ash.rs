@@ -10,10 +10,12 @@ impl Command for Ash {
     fn execute(&self) {
         loop {
             let path = env::current_dir();
-            print!(
-                "{} $ ", // TODO: display "#" if root
-                path.expect("unknown").display()
-            );
+            let userchar = if boxutils::cross::user::is_admin() {
+                '#'
+            } else {
+                '$'
+            };
+            print!("{} {} ", path.expect("unknown").display(), userchar);
             let _ = io::stdout().flush();
             let mut input = String::new();
             io::stdin().read_line(&mut input).unwrap();
