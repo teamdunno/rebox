@@ -25,3 +25,4 @@ command!(base32::Base32);
 command!(seq::Seq);
 command!(env::Env);
 command!(ln::Ln);
+command!(dirname::Dirname);

@@ -35,6 +35,7 @@ pub fn get_registry() -> CommandRegistry {
         "seq" => coreutils::commands::Seq,
         "env" => coreutils::commands::Env,
         "ln" => coreutils::commands::Ln,
+        "dirname" => coreutils::commands::Dirname,
         "box" => Boxcmd
     });
 
