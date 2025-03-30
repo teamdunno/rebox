@@ -1,10 +1,6 @@
 use boxutils::args::ArgParser;
 use boxutils::commands::Command;
 use std::fs;
-#[cfg(unix)]
-use std::os::unix::fs::symlink;
-#[cfg(windows)]
-use std::os::windows::fs::{symlink_dir, symlink_file};
 use std::path::Path;
 
 pub struct Ln;
@@ -58,28 +54,13 @@ impl Command for Ln {
         }
 
         if args.get_flag("-s") {
-            #[cfg(unix)]
-            {
-                if let Err(e) = symlink(&to_be_linked, &destination) {
-                    eprintln!("ln: failed to create symlink: {}", e);
-                }
-            }
+            let symlink_result = boxutils::cross::fs::symlink(to_be_linked, destination);
 
-            #[cfg(windows)]
-            {
-                let target_metadata = fs::metadata(&to_be_linked).unwrap();
-                let symlink_result = if target_metadata.is_dir() {
-                    symlink_dir(&to_be_linked, &destination)
-                } else {
-                    symlink_file(&to_be_linked, &destination)
-                };
-
-                if let Err(e) = symlink_result {
-                    eprintln!("ln: failed to create symlink: {}", e);
-                }
+            if let Err(e) = symlink_result {
+                eprintln!("ln: failed to create symlink: {}", e);
             }
         } else {
-            if let Err(e) = fs::hard_link(&to_be_linked, &destination) {
+            if let Err(e) = boxutils::cross::fs::hard_link(to_be_linked, destination) {
                 eprintln!("ln: failed to create hard link: {}", e);
             }
         }
