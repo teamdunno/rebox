@@ -35,3 +35,7 @@ impl UserPrivileges {
 pub fn is_admin() -> bool {
     UserPrivileges::is_root()
 }
+
+pub fn get_username() -> Option<String> {
+    std::env::var("USER").ok()
+}

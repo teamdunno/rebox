@@ -1,10 +1,10 @@
 #![allow(dead_code)]
 #![cfg(windows)]
 
-use std::ptr;
 use std::ffi::c_void;
 use std::mem::{size_of, zeroed};
 use std::os::raw::c_ulong;
+use std::ptr;
 
 #[link(name = "advapi32")]
 unsafe extern "system" {
@@ -44,7 +44,9 @@ impl AccessToken {
             return None;
         }
 
-        Some(Self { handle: token_handle })
+        Some(Self {
+            handle: token_handle,
+        })
     }
 
     /// Checks if the token is elevated (i.e., running as an administrator).
@@ -80,4 +82,8 @@ pub fn is_admin() -> bool {
     } else {
         false
     }
+}
+
+pub fn get_username() -> Option<String> {
+    std::env::var("USERNAME").ok()
 }

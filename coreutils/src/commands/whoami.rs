@@ -1,6 +1,6 @@
 use boxutils::args::ArgParser;
 use boxutils::commands::Command;
-use std::env;
+use boxutils::cross::user;
 
 pub struct WhoAmI;
 
@@ -13,9 +13,7 @@ impl Command for WhoAmI {
             return;
         }
 
-        let username = env::var("USER") // Unix
-            .or_else(|_| env::var("USERNAME")) // Windows
-            .unwrap_or_else(|_| "unknown".to_string());
+        let username = user::get_username().unwrap_or_else(|| "unknown".to_string());
 
         println!("{}", username);
     }
