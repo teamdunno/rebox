@@ -1,7 +1,6 @@
 use boxutils::args::ArgParser;
 use boxutils::commands::Command;
 use std::fs;
-use std::path::Path;
 
 pub struct Ln;
 
@@ -17,6 +16,7 @@ impl Command for Ln {
             .add_option("-S")
             .parse_args("ln");
 
+        let mut dereference = true;
         let help = args.get_normal_args().len() != 2 || args.get_flag("--help");
         if help {
             println!("Usage: ln [-sfnbtv] [-S SUF] TARGET LINK");
@@ -31,7 +31,7 @@ impl Command for Ln {
         }
 
         if args.get_flag("-f") {
-            if fs::metadata(&destination).is_ok() {
+            if fs::exists(&destination).unwrap() {
                 if fs::metadata(&destination).unwrap().is_dir() {
                     fs::remove_dir_all(&destination).unwrap();
                 } else {
@@ -41,10 +41,7 @@ impl Command for Ln {
         }
 
         if args.get_flag("-n") {
-            if Path::new(&destination).exists() {
-                println!("ln: {} exists, stopping...", destination);
-                return;
-            }
+            dereference = false;
         }
 
         if args.get_flag("-b") {
@@ -54,13 +51,13 @@ impl Command for Ln {
         }
 
         if args.get_flag("-s") {
-            let symlink_result = boxutils::cross::fs::symlink(to_be_linked, destination);
+            let symlink_result = boxutils::cross::fs::symlink(to_be_linked, destination, dereference);
 
             if let Err(e) = symlink_result {
                 eprintln!("ln: failed to create symlink: {}", e);
             }
         } else {
-            if let Err(e) = boxutils::cross::fs::hard_link(to_be_linked, destination) {
+            if let Err(e) = boxutils::cross::fs::hard_link(to_be_linked, destination, dereference) {
                 eprintln!("ln: failed to create hard link: {}", e);
             }
         }
