@@ -26,3 +26,5 @@ command!(seq::Seq);
 command!(env::Env);
 command!(ln::Ln);
 command!(dirname::Dirname);
+command!(dos2unix::Dos2Unix);
+command!(unix2dos::Unix2Dos);

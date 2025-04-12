@@ -36,6 +36,8 @@ pub fn get_registry() -> CommandRegistry {
         "env" => coreutils::commands::Env,
         "ln" => coreutils::commands::Ln,
         "dirname" => coreutils::commands::Dirname,
+        "dos2unix" => coreutils::commands::Dos2Unix,
+        "unix2dos" => coreutils::commands::Unix2Dos,
         "box" => Boxcmd
     });
 
