@@ -3,11 +3,19 @@ name = "rebox"
 version = "0.1.0"
 edition = "2024"
 
-[dependencies]
-boxutils = { path = "./utils" }
+[workspace]
+members = ["utils", "coreutils", "shell"]
+resolver = "3"
+
+[workspace.dependencies]
 coreutils = { path = "./coreutils" }
+boxutils = { path = "./utils" }
 shell = { path = "./shell" }
 
+[dependencies]
+coreutils.workspace = true
+boxutils.workspace = true
+shell.workspace = true
 
 [[bin]]
 name = "box"
