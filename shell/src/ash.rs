@@ -1,53 +1,51 @@
 use boxutils::commands::Command;
 use std::env;
-use std::io::{self, ErrorKind, Write};
-use std::path::Path;
-use std::process::Command as stdCommand;
+use std::io::{self, Write};
+use std::process;
+
+use crate::built_in::{Action, run_if_exists};
 
 pub struct Ash;
 
 impl Command for Ash {
     fn execute(&self) {
+        let mut path = env::current_dir().unwrap().display().to_string();
+
         loop {
-            let path = env::current_dir();
             let userchar = if boxutils::cross::user::is_admin() {
                 '#'
             } else {
                 '$'
             };
-            print!("{} {} ", path.expect("unknown").display(), userchar);
+            print!("{} {} ", path.clone(), userchar);
             let _ = io::stdout().flush();
             let mut input = String::new();
             io::stdin().read_line(&mut input).unwrap();
             let mut full_cmd = input.trim().split_whitespace();
-            let command = full_cmd.next().unwrap();
-            let mut arguments = full_cmd;
-            match command {
-                "exit" => return,
-                "cd" => {
-                    let new_path = arguments.next();
-                    let new_path = Path::new(new_path.unwrap());
-                    let _ = env::set_current_dir(&new_path).is_ok();
-                }
-                command => {
-                    let out = stdCommand::new(command).args(arguments).spawn();
+            let command = full_cmd.next().unwrap_or(" ");
+            let arguments: Vec<&str> = full_cmd.collect();
 
-                    match out {
-                        Ok(mut out) => {
-                            let _ = out.wait();
-                        }
-                        Err(err) => match err.kind() {
-                            ErrorKind::NotFound => {
-                                eprintln!("ash: {}: not found", command);
-                            }
-                            ErrorKind::PermissionDenied => {
-                                eprintln!("ash: {}: permission denied", command);
-                            }
-                            _ => {
-                                eprintln!("ash: uncaught error: {}", err);
-                            }
-                        },
+            if let Some(action) = run_if_exists(command.to_string(), arguments.clone()) {
+                match action {
+                    Action::Exit => {
+                        break;
                     }
+
+                    Action::ChangeDirectory(directory) => {
+                        path = directory;
+                        env::set_current_dir(&path).unwrap();
+                    }
+                }
+            } else {
+                let out = process::Command::new(command)
+                    .args(arguments.clone())
+                    .spawn();
+
+                match out {
+                    Ok(mut out) => {
+                        let _ = out.wait();
+                    }
+                    Err(err) => println!("{:?}", err),
                 }
             }
         }
