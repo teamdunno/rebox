@@ -35,6 +35,8 @@ impl Command for Ash {
                         path = directory;
                         env::set_current_dir(&path).unwrap();
                     }
+
+                    Action::Nothing => {}
                 }
             } else {
                 let out = process::Command::new(command)
