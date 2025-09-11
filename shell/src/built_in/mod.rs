@@ -1,16 +1,19 @@
 mod cd;
 mod exit;
+mod eval;
 
 #[derive(Debug)]
 pub enum Action {
     Exit,
     ChangeDirectory(String),
+    Nothing
 }
 
 fn get_function(command: String) -> Option<fn(Vec<&str>) -> Action> {
     let registry = [
         ("exit", exit::exit as fn(Vec<&str>) -> Action),
         ("cd", cd::cd as fn(Vec<&str>) -> Action),
+        ("eval", eval::eval as fn(Vec<&str>) -> Action),
     ];
     let mut function: Option<fn(Vec<&str>) -> Action> = None;
 
