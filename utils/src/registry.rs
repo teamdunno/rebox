@@ -1,6 +1,8 @@
 use super::commands::Command;
 use std::collections::HashMap;
 
+use anyhow::{Error, Result, bail};
+
 pub struct CommandRegistry {
     commands: HashMap<String, Box<dyn Command>>,
 }
@@ -28,23 +30,31 @@ impl CommandRegistry {
         self.commands.get(name)
     }
 
-    pub fn execute(&self, name: &str) {
+    pub fn execute(&self, name: &str) -> Result<(), Error> {
         if let Some(command) = self.get(name) {
-            command.execute();
+            command.execute()?;
         } else {
-            println!("Command not found: {}", name);
+            bail!("Command not found: {}", name);
         }
+
+        Ok(())
     }
 }
 
 mod tests {
+    #[allow(unused_imports)] // why the heck is rust saying it's unused??
+    use anyhow::{Error, Result};
+
     #[test]
     fn test_register() {
         use super::Command;
         use super::CommandRegistry;
+
         struct TestCommand;
         impl Command for TestCommand {
-            fn execute(&self) {}
+            fn execute(&self) -> Result<(), Error> {
+                Ok(())
+            }
         }
 
         let mut registry = CommandRegistry::new();
@@ -53,18 +63,23 @@ mod tests {
     }
 
     #[test]
-    fn test_execute() {
+    fn test_execute() -> Result<(), Error> {
         use super::Command;
         use super::CommandRegistry;
+
         struct TestCommand;
         impl Command for TestCommand {
-            fn execute(&self) {
+            fn execute(&self) -> Result<(), Error> {
                 println!("TestCommand executed");
+
+                Ok(())
             }
         }
 
         let mut registry = CommandRegistry::new();
         registry.register("test", Box::new(TestCommand));
-        registry.execute("test");
+        registry.execute("test")?;
+
+        Ok(())
     }
 }

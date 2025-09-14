@@ -5,5 +5,8 @@ edition = "2024"
 
 [dependencies]
 boxutils.workspace = true
+anyhow.workspace = true
+
+# TODO: get rid of these
 hostname = "0.4.0"
 num_cpus = "1.16.0"

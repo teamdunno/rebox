@@ -11,11 +11,13 @@ resolver = "3"
 coreutils = { path = "./coreutils" }
 boxutils = { path = "./utils" }
 shell = { path = "./shell" }
+anyhow = "1.0.99"
 
 [dependencies]
 coreutils.workspace = true
 boxutils.workspace = true
 shell.workspace = true
+anyhow.workspace = true
 
 [[bin]]
 name = "box"

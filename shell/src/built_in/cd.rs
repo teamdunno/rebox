@@ -1,9 +1,10 @@
 use crate::built_in::Action;
+use anyhow::{Result, bail};
 
-pub fn cd(arguments: Vec<&str>) -> Action {
+pub fn cd(arguments: Vec<&str>) -> Result<Action> {
     if arguments.len() < 1 {
-        panic!("cd expects **one** argument");
+        bail!("cd expects **one** argument");
     }
 
-    Action::ChangeDirectory(arguments[0].to_owned().clone())
+    Ok(Action::ChangeDirectory(arguments[0].to_owned().clone()))
 }

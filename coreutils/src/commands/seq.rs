@@ -1,9 +1,10 @@
+use anyhow::{Result, bail};
 use boxutils::{args::ArgParser, commands::Command};
 
 pub struct Seq;
 
 impl Command for Seq {
-    fn execute(&self) {
+    fn execute(&self) -> Result<()> {
         let args = ArgParser::builder()
             .add_option("-s")
             .add_flag("-w")
@@ -31,7 +32,7 @@ impl Command for Seq {
                 incnum = inc.parse().expect("seq: invalid inc number");
                 lastnum = last.parse().expect("seq: invalid last number");
             }
-            _ => panic!("seq: malformed arguments"),
+            _ => bail!("seq: malformed arguments"),
         }
 
         let mut accumulator = firstnum;
@@ -62,5 +63,7 @@ impl Command for Seq {
                 print!("{}", separator);
             }
         }
+
+        Ok(())
     }
 }

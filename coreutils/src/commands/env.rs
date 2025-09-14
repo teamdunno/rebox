@@ -1,3 +1,4 @@
+use anyhow::Result;
 use boxutils::args::ArgParser;
 use boxutils::commands::Command;
 
@@ -35,7 +36,7 @@ impl Env {
 }
 
 impl Command for Env {
-    fn execute(&self) {
+    fn execute(&self) -> Result<()> {
         let args = ArgParser::builder()
             .add_flag("-i")
             .add_flag("-0")
@@ -59,20 +60,20 @@ impl Command for Env {
         if to_run.is_empty() {
             Env::print_all_vars();
 
-            return;
+            return Ok(());
         }
 
         if let Some((command, args)) = to_run.split_first() {
             std::process::Command::new(command)
                 .args(args)
-                .spawn()
-                .expect("env: failed to start command")
-                .wait()
-                .expect("env: could not wait for command");
+                .spawn()?
+                .wait()?;
         }
 
         if null_terminate {
             print!("\0");
         }
+
+        Ok(())
     }
 }

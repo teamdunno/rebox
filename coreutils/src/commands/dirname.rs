@@ -1,18 +1,16 @@
-use std::path::Path;
-
+use anyhow::{Result, bail};
 use boxutils::{args::ArgParser, commands::Command};
-
+use std::path::Path;
 pub struct Dirname;
 
 impl Command for Dirname {
-    fn execute(&self) {
+    fn execute(&self) -> Result<()> {
         let args = ArgParser::builder()
             .add_flag("--help")
             .parse_args("dirname");
 
         if args.get_normal_args().len() != 1 || args.get_flag("--help") {
-            println!("Usage: dirname FILENAME");
-            return;
+            bail!("Usage: dirname FILENAME");
         }
 
         // note(teesh): we have already checked for argnums, so we're fine :D
@@ -30,7 +28,9 @@ impl Command for Dirname {
 
             println!("{}", to_print);
         } else {
-            println!("dirname: could not get parent")
+            bail!("dirname: could not get parent")
         }
+
+        Ok(())
     }
 }
