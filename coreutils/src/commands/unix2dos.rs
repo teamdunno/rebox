@@ -1,4 +1,5 @@
 use crate::commands::dos2unix::convert;
+use anyhow::Result;
 use boxutils::args::ArgParser;
 use boxutils::commands::Command;
 use std::io::{self, Write};
@@ -7,7 +8,7 @@ use std::process::exit;
 pub struct Unix2Dos;
 
 impl Command for Unix2Dos {
-    fn execute(&self) {
+    fn execute(&self) -> Result<()> {
         let args = ArgParser::builder()
             .add_flag("-u")
             .add_flag("-d")
@@ -35,10 +36,11 @@ impl Command for Unix2Dos {
         let result = convert(&args, dos2unix);
 
         if args.get_normal_args().len() < 1 {
-            let _ = io::stdout().write_all(&result);
+            io::stdout().write_all(&result)?;
         } else {
-            let _ = std::fs::write(args.get_normal_args()[0].clone(), &result);
+            std::fs::write(args.get_normal_args()[0].clone(), &result)?;
         }
 
+        Ok(())
     }
 }

@@ -1,3 +1,4 @@
+use anyhow::{Result, bail};
 use boxutils::args::ArgParser;
 use boxutils::commands::Command;
 use std::fs;
@@ -5,7 +6,7 @@ use std::fs;
 pub struct Mkdir;
 
 impl Command for Mkdir {
-    fn execute(&self) {
+    fn execute(&self) -> Result<()> {
         let args = ArgParser::builder()
             .add_flag("-p")
             .add_flag("--parents")
@@ -14,11 +15,11 @@ impl Command for Mkdir {
 
         if args.get_flag("--help") {
             println!("Usage: mkdir [DIR1] [DIR2] etc. pp. [-p, --parents]");
-            return;
+            return Ok(());
         }
 
         if args.get_normal_args().len() == 0 {
-            panic!("Usage: mkdir [DIR1] [DIR1] etc. pp. [-p, --parents]");
+            bail!("Usage: mkdir [DIR1] [DIR1] etc. pp. [-p, --parents]");
         }
 
         let parented = args.get_flag("-p") || args.get_flag("--parents");
@@ -27,10 +28,12 @@ impl Command for Mkdir {
 
         for dir in to_create {
             if parented {
-                let _ = fs::create_dir_all(dir);
+                fs::create_dir_all(dir)?;
             } else {
-                let _ = fs::create_dir(dir);
+                fs::create_dir(dir)?;
             }
         }
+
+        Ok(())
     }
 }

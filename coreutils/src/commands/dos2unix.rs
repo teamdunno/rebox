@@ -1,8 +1,8 @@
+use anyhow::{Result, bail};
 use boxutils::args::ArgParser;
 use boxutils::commands::Command;
 use std::fs::File;
 use std::io::{self, BufReader, Read, Write};
-use std::process::exit;
 
 pub fn convert(arguments: &ArgParser, d2u: bool) -> Vec<u8> {
     let mut vecbuf = Vec::new();
@@ -19,10 +19,7 @@ pub fn convert(arguments: &ArgParser, d2u: bool) -> Vec<u8> {
     }
 
     if d2u {
-        vecbuf.retain(
-            |x|
-            *x != b'\r'
-        );
+        vecbuf.retain(|x| *x != b'\r');
     } else {
         let mut tmpbuf = Vec::new();
         vecbuf.iter().enumerate().for_each(|(i, &b)| {
@@ -40,7 +37,7 @@ pub fn convert(arguments: &ArgParser, d2u: bool) -> Vec<u8> {
 pub struct Dos2Unix;
 
 impl Command for Dos2Unix {
-    fn execute(&self) {
+    fn execute(&self) -> Result<()> {
         let args = ArgParser::builder()
             .add_flag("-u")
             .add_flag("-d")
@@ -58,19 +55,23 @@ impl Command for Dos2Unix {
         }
 
         if args.get_flag("--help") {
-            println!("Usage: dos2unix [-d] [-u] [FILE]");
-            print!("\n");
-            println!("-d: unix2dos");
-            println!("-u: dos2unix (default)");
-            exit(0);
+            let help_text = "\
+Usage: dos2unix [-d] [-u] [FILE]
+
+-d: unix2dos
+-u: dos2unix (default)\
+";
+            bail!("{}", help_text)
         }
 
         let result = convert(&args, dos2unix);
 
         if args.get_normal_args().len() < 1 {
-            let _ = io::stdout().write_all(&result);
+            io::stdout().write_all(&result)?;
         } else {
-            let _ = std::fs::write(args.get_normal_args()[0].clone(), &result);
+            std::fs::write(args.get_normal_args()[0].clone(), &result)?;
         }
+
+        Ok(())
     }
 }

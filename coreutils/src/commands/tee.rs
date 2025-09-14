@@ -1,3 +1,4 @@
+use anyhow::{Result, bail};
 use boxutils::args::ArgParser;
 use boxutils::commands::Command;
 use std::fs::OpenOptions;
@@ -10,7 +11,7 @@ use std::io::Write;
 pub struct Tee;
 
 impl Command for Tee {
-    fn execute(&self) {
+    fn execute(&self) -> Result<()> {
         let args = ArgParser::builder()
             .add_flag("--help")
             .add_flag("-a")
@@ -34,17 +35,19 @@ impl Command for Tee {
             if let Ok(this_file) = this_file {
                 writes.push(Box::new(this_file));
             } else {
-                eprintln!("tee: unable to open file: {}", file);
+                bail!("tee: unable to open file: {}", file);
             }
         }
 
         let mut buffer = String::new();
         while boxutils::input::repl(&mut buffer) {
             for output in &mut writes {
-                let _ = output.write_all(buffer.as_bytes());
-                let _ = output.flush();
+                output.write_all(buffer.as_bytes())?;
+                output.flush()?;
             }
             buffer.clear();
         }
+
+        Ok(())
     }
 }

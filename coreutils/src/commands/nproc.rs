@@ -1,3 +1,4 @@
+use anyhow::Result;
 use boxutils::args::ArgParser;
 use boxutils::commands::Command;
 use num_cpus::get;
@@ -5,7 +6,7 @@ use num_cpus::get;
 pub struct Nproc;
 
 impl Command for Nproc {
-    fn execute(&self) {
+    fn execute(&self) -> Result<()> {
         let args = ArgParser::builder()
             .add_flag("--help")
             .add_flag("--ignore")
@@ -23,7 +24,7 @@ Prints the number of available CPUs to stdout.
     --ignore=N, --ignore N  Ignore N CPUs
 "
             );
-            return;
+            return Ok(());
         }
 
         if args.get_flag("--all") {
@@ -31,13 +32,13 @@ Prints the number of available CPUs to stdout.
         }
 
         if args.get_flag("--ignore") {
-            ignore = args.get_option("--ignore").unwrap().parse().unwrap();
+            ignore = args.get_option("--ignore").unwrap().parse()?;
         }
 
         for argument in args.get_normal_args() {
             if let Some((k, v)) = argument.split_once('=') {
                 if k == "--ignore" {
-                    ignore = v.parse().unwrap();
+                    ignore = v.parse()?;
                 }
             }
         }
@@ -47,5 +48,7 @@ Prints the number of available CPUs to stdout.
         } else {
             println!("{}", get() as u64 - ignore)
         }
+
+        Ok(())
     }
 }

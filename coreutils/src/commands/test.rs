@@ -1,3 +1,4 @@
+use anyhow::{Result, bail};
 use boxutils::args::ArgParser;
 use boxutils::commands::Command;
 
@@ -194,7 +195,7 @@ impl Test {
 }
 
 impl Command for Test {
-    fn execute(&self) {
+    fn execute(&self) -> Result<()> {
         let args = ArgParser::builder()
             .add_flags(STRING_TESTS.into())
             .add_flags(NUMBER_TESTS.into())
@@ -202,7 +203,7 @@ impl Command for Test {
             .parse_args(if self.bracket { "[" } else { "test" });
 
         if self.bracket && !args.get_flag("]") {
-            panic!("[: missing ]");
+            bail!("[: missing ]");
         }
 
         if STRING_TESTS.iter().any(|&x| args.get_flag(x)) {
@@ -214,5 +215,6 @@ impl Command for Test {
         }
 
         exit_false();
+        unreachable!();
     }
 }

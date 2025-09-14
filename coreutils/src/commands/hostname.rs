@@ -1,10 +1,11 @@
+use anyhow::Result;
 use boxutils::args::ArgParser;
 use boxutils::commands::Command;
 
 pub struct Hostname;
 
 impl Command for Hostname {
-    fn execute(&self) {
+    fn execute(&self) -> Result<()> {
         let args = ArgParser::builder()
             .add_flag("--help")
             .parse_args("hostname");
@@ -19,5 +20,7 @@ impl Command for Hostname {
         };
 
         println!("{}", hostname.to_string_lossy());
+
+        Ok(())
     }
 }

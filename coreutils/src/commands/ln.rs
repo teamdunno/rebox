@@ -1,11 +1,11 @@
+use anyhow::{Result, bail};
 use boxutils::args::ArgParser;
 use boxutils::commands::Command;
 use std::fs;
-
 pub struct Ln;
 
 impl Command for Ln {
-    fn execute(&self) {
+    fn execute(&self) -> Result<()> {
         let args = ArgParser::builder()
             .add_flag("--help")
             .add_flag("-s")
@@ -20,7 +20,7 @@ impl Command for Ln {
         let help = args.get_normal_args().len() != 2 || args.get_flag("--help");
         if help {
             println!("Usage: ln [-sfnbtv] [-S SUF] TARGET LINK");
-            return;
+            return Ok(());
         }
 
         let to_be_linked = args.get_normal_args()[0].clone();
@@ -31,11 +31,11 @@ impl Command for Ln {
         }
 
         if args.get_flag("-f") {
-            if fs::exists(&destination).unwrap() {
-                if fs::metadata(&destination).unwrap().is_dir() {
-                    fs::remove_dir_all(&destination).unwrap();
+            if fs::exists(&destination)? {
+                if fs::metadata(&destination)?.is_dir() {
+                    fs::remove_dir_all(&destination)?;
                 } else {
-                    fs::remove_file(&destination).unwrap();
+                    fs::remove_file(&destination)?;
                 }
             }
         }
@@ -47,19 +47,22 @@ impl Command for Ln {
         if args.get_flag("-b") {
             let suffix = args.get_option("-S").unwrap_or("~");
             let new_filename = format!("{}{}", destination, suffix);
-            let _ = fs::rename(&destination, &new_filename);
+            fs::rename(&destination, &new_filename)?;
         }
 
         if args.get_flag("-s") {
-            let symlink_result = boxutils::cross::fs::symlink(to_be_linked, destination, dereference);
+            let symlink_result =
+                boxutils::cross::fs::symlink(to_be_linked, destination, dereference);
 
             if let Err(e) = symlink_result {
-                eprintln!("ln: failed to create symlink: {}", e);
+                bail!("ln: failed to create symlink: {}", e);
             }
         } else {
             if let Err(e) = boxutils::cross::fs::hard_link(to_be_linked, destination, dereference) {
-                eprintln!("ln: failed to create hard link: {}", e);
+                bail!("ln: failed to create hard link: {}", e);
             }
         }
+
+        Ok(())
     }
 }

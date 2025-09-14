@@ -2,6 +2,8 @@ use std::env;
 use std::mem;
 use std::path::Path;
 
+use anyhow::{Error, Result};
+
 pub fn being_called_as() -> String {
     let args = env::args().collect::<Vec<String>>();
     let exe_path = args[0].clone();
@@ -34,5 +36,5 @@ pub fn get_args(commandname: String, args: Vec<String>) -> Vec<String> {
 }
 
 pub trait Command {
-    fn execute(&self);
+    fn execute(&self) -> Result<(), Error>;
 }

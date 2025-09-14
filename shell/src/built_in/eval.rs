@@ -1,17 +1,16 @@
 use crate::built_in::Action;
+use anyhow::{Result, bail};
 use std::process::Command;
 
-pub fn eval(arguments: Vec<&str>) -> Action {
+pub fn eval(arguments: Vec<&str>) -> Result<Action> {
     if arguments.len() < 1 {
-        panic!("eval expects **one or more** arguments");
+        bail!("eval expects **one or more** arguments");
     }
 
-    let output = Command::new(arguments[0]).args(&arguments[1..]).spawn();
-    match output {
-        Ok(mut output) => {
-            output.wait().expect("failed to wait for process exit");
-        }
-        Err(err) => println!("{:?}", err)
-    }
-    Action::Nothing
+    Command::new(arguments[0])
+        .args(&arguments[1..])
+        .spawn()?
+        .wait()?;
+    Ok(Action::Nothing)
 }
+

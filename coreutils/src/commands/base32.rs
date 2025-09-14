@@ -1,3 +1,4 @@
+use anyhow::{Result, bail};
 use boxutils::args::ArgParser;
 use boxutils::commands::Command;
 use boxutils::encoding::base32;
@@ -11,7 +12,7 @@ use std::io::Read;
 pub struct Base32;
 
 impl Command for Base32 {
-    fn execute(&self) {
+    fn execute(&self) -> Result<()> {
         let args = ArgParser::builder()
             .add_flag("-d") // decode flag
             .parse_args("base32");
@@ -22,7 +23,7 @@ impl Command for Base32 {
         let mut file: Box<dyn Read> = match &args.get_normal_args()[..] {
             [] => Box::new(std::io::stdin()),
             [file] => Box::new(OpenOptions::new().read(true).open(file).unwrap()),
-            _ => panic!("base32: multiple files provided"),
+            _ => bail!("base32: multiple files provided"),
         };
 
         let mut buffer = String::new();
@@ -35,5 +36,7 @@ impl Command for Base32 {
 
             println!("{}", data);
         }
+
+        Ok(())
     }
 }

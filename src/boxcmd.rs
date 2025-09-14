@@ -1,11 +1,12 @@
 use super::registry::get_registry;
+use anyhow::{Result, bail};
 use boxutils::args::ArgParser;
 use boxutils::commands::Command;
 
 pub struct Boxcmd;
 
 impl Command for Boxcmd {
-    fn execute(&self) {
+    fn execute(&self) -> Result<()> {
         let parser = ArgParser::builder().parse_args("box");
 
         let registry = get_registry();
@@ -15,11 +16,10 @@ impl Command for Boxcmd {
                 continue;
             }
 
-            registry.execute(&command);
-            return;
+            registry.execute(&command)?;
         }
 
-        println!(
+        bail!(
             "No valid command provided. Included commands:\n{}",
             registry.list().join(", ")
         );
